@@ -32,6 +32,25 @@ ALLOWED_LANGUAGES = ['Bash', 'C', 'Javascript', 'Python'];
 	const db = await dbPromise;
 	await setupDb();
 
+	let timerId = setInterval(() => clearExpiredPastes(), 60);
+
+	async function deleteContentOf(id) {
+		const query = await db.prepare("UPDATE pastes SET content = '' WHERE id = (?)");
+		await query.run(id);
+	}
+
+	async function clearExpiredPastes() {
+		const query = await db.prepare("SELECT id, expiration_date FROM pastes");
+
+		var row;
+		while((row = await query.get()))
+		{
+			if (Date.now() > row.expiration_date)
+				deleteContentOf(row.id);
+		}
+		query.finalize();
+	}
+
 	function generateId() {
 		return Math.random().toString(32).substring(2);
 	}
@@ -49,7 +68,7 @@ ALLOWED_LANGUAGES = ['Bash', 'C', 'Javascript', 'Python'];
 	async function incrementViews(id)
 	{
 		const query = await db.prepare("UPDATE pastes SET num_views = num_views + 1 WHERE id = (?)");
-		await query.all(id);
+		await query.run(id);
 	}
 
 	async function handleGetPaste(ctx, next) {
@@ -66,7 +85,7 @@ ALLOWED_LANGUAGES = ['Bash', 'C', 'Javascript', 'Python'];
 		{
 			ctx.status = 200;
 			if ((data[0].max_views == -1 || data[0].num_views < data[0].max_views) &&
-				Date.now() < data[0].expiration_date)
+				(data[0].expiration_date == -1 || Date.now() < data[0].expiration_date))
 			{
 				// TODO json stringify?
 				ctx.body = data[0];
@@ -121,6 +140,8 @@ ALLOWED_LANGUAGES = ['Bash', 'C', 'Javascript', 'Python'];
 		else
 			values.public = 0;
 
+		values.id = await generateUniqueId();
+
 		var stmt = await db.prepare("INSERT INTO pastes (\
 														id,\
 														author,\
@@ -134,7 +155,7 @@ ALLOWED_LANGUAGES = ['Bash', 'C', 'Javascript', 'Python'];
 														public\
 														) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
 		await stmt.run(
-						await generateUniqueId(),
+						values.id,
 						values.author,
 						values.title,
 						values.content,
@@ -146,7 +167,8 @@ ALLOWED_LANGUAGES = ['Bash', 'C', 'Javascript', 'Python'];
 						values.public
 					  );
 
-		ctx.status = 200;
+		ctx.status = 201;
+		ctx.set('Location', ctx.origin + '/' + values.id);
 		await next();
 	}
 
