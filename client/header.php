@@ -23,15 +23,12 @@
             <li class="nav-item active">
                 <a class="nav-link" href="/">Home<span class="sr-only">(current)</span></a>
             </li>
-            <?php if (!isset($_SESSION['id'])): ?>
                 <li class="nav-item active">
                     <a class="nav-link" href="/login.php">Login<span class="sr-only">(current)</span></a>
                 </li>
                 <li class="nav-item active">
                     <a class="nav-link" href="/register.php">Register</a>
                 </li>
-            <?php endif;
-            if (isset($_SESSION['id'])): ?>
                 <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                         Disconnect
@@ -42,7 +39,6 @@
                         <a class="dropdown-item" href="#">Something else here</a>
                     </div>
                 </li>
-            <?php endif; ?>
         </ul>
     </div>
 </nav>
