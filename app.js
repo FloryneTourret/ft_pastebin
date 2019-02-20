@@ -3,40 +3,25 @@ const Koa = require('koa');
 const koaBody = require('koa-body');
 const mount = require('koa-mount');
 const serve = require('koa-static');
-// const sqlite3 = require('sqlite3').verbose();
 const sqlite = require('sqlite');
 
-// const db = new sqlite3.Database("db.sqlite");
-
-// db.serialize(function () {
-// 		db.run('CREATE TABLE pastes (short_url TEXT,\
-// 								language TEXT,\
-// 								insertion_date INTEGER,\
-// 								expiration_date INTEGER,\
-// 								num_views INTEGER,\
-// 								max_views INTEGER,\
-// 								public INTEGER,\
-// 								author TEXT,\
-// 								title TEXT,\
-// 								content TEXT);',
-// 			   (err) => {
-// 				   console.error(err);
-// 			   });
-// });
+ALLOWED_LANGUAGES = ['Bash', 'C', 'Javascript', 'Python'];
 
 (async () => {
 	async function setupDb() {
 		try {
-			await db.run('CREATE TABLE pastes (short_url TEXT,\
+			await db.run('CREATE TABLE pastes (\
+						short_url TEXT,\
+						author TEXT,\
+						title TEXT,\
+						content TEXT,\
 						language TEXT,\
 						insertion_date INTEGER,\
 						expiration_date INTEGER,\
 						num_views INTEGER,\
 						max_views INTEGER,\
-						public INTEGER,\
-						author TEXT,\
-						title TEXT,\
-						content TEXT);');
+						public INTEGER\
+						);');
 		} catch (err) {
 			console.error(err);
 		}
@@ -54,20 +39,54 @@ const sqlite = require('sqlite');
 	async function handleGetPaste(ctx, next) {
 		const query = await db.prepare("SELECT * FROM pastes WHERE short_url = (?)");
 		const data = await query.all(ctx.params.id);
+		// TODO json stringify?
 		ctx.body = data[0];
 	}
 
+	function getValues(body) {
+		return {
+			author: body['author'],
+			title: body['title'],
+			content: body['content'],
+			language: body['language'],
+			max_views: body['max_views'],
+			public: body['public'],
+		};
+	}
+
 	async function handlePasteUpload(ctx, next) {
+		// We answer 404 when there is some missing parameters
+		// https://stackoverflow.com/a/3050624
+
+		var values = getValues(ctx.request.body);
+
+		if (values.content === undefined || values.content.length < 1)
+		{
+			ctx.status = 404;
+			await next();
+			return ;
+		}
+
+		if (values.author === undefined || values.author.length < 1)
+			values.author = "Anonymous";
+		if (values.title === undefined || values.title.length < 1)
+			values.title = "Untitled";
+		if (values.language === undefined || ALLOWED_LANGUAGES.indexOf(values.language) == -1)
+			values.language = "None";
+		if (values.max_views === undefined || isNaN(parseInt(values.max_views)) || parseInt(values.max_views) < 1)
+			values.max_views = -1;
+
 		const query = await db.prepare("SELECT COUNT(*) AS Count FROM pastes WHERE short_url = (?)");
 		do {
 			shortUrl = generateShortUrl();
 			count = (await query.all(shortUrl))[0].Count;
-			console.error(count);
 		} while (count != 0)
 
-		var stmt = await db.prepare("INSERT INTO pastes (short_url, author, title, content) VALUES (?, ?, ?, ?)");
-		stmt.run(shortUrl, ctx.request.body['author'], ctx.request.body['title'], ctx.request.body['content']);
+		var stmt = await db.prepare("INSERT INTO pastes (short_url, author, title, content, language, num_views, max_views) VALUES (?, ?, ?, ?, ?, ?, ?)");
+		await stmt.run(shortUrl, values.author, values.title, values.content, values.language, 0, values.max_views);
+
 		ctx.status = 200;
+		await next();
 	}
 
 	const api = new Koa();
