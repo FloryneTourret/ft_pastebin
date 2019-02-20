@@ -11,7 +11,7 @@ ALLOWED_LANGUAGES = ['Bash', 'C', 'Javascript', 'Python'];
 	async function setupDb() {
 		try {
 			await db.run('CREATE TABLE pastes (\
-						short_url TEXT,\
+						id TEXT,\
 						author TEXT,\
 						title TEXT,\
 						content TEXT,\
@@ -32,15 +32,56 @@ ALLOWED_LANGUAGES = ['Bash', 'C', 'Javascript', 'Python'];
 	const db = await dbPromise;
 	await setupDb();
 
-	function generateShortUrl() {
+	function generateId() {
 		return Math.random().toString(32).substring(2);
 	}
 
+	async function generateUniqueId() {
+		const query = await db.prepare("SELECT COUNT(*) AS Count FROM pastes WHERE id = (?)");
+		do {
+			id = generateId();
+			count = (await query.all(id))[0].Count;
+		} while (count != 0)
+
+		return id;
+	}
+
+	async function incrementViews(id)
+	{
+		const query = await db.prepare("UPDATE pastes SET num_views = num_views + 1 WHERE id = (?)");
+		await query.all(id);
+	}
+
 	async function handleGetPaste(ctx, next) {
-		const query = await db.prepare("SELECT * FROM pastes WHERE short_url = (?)");
-		const data = await query.all(ctx.params.id);
-		// TODO json stringify?
-		ctx.body = data[0];
+		if (ctx.query.id === undefined)
+		{
+			ctx.status = 404;
+			await next();
+			return ;
+		}
+
+		const query = await db.prepare("SELECT * FROM pastes WHERE id = (?)");
+		const data = await query.all(ctx.query.id);
+		if (data.length > 0)
+		{
+			ctx.status = 200;
+			if ((data[0].max_views == -1 || data[0].num_views < data[0].max_views) &&
+				Date.now() < data[0].expiration_date)
+			{
+				// TODO json stringify?
+				ctx.body = data[0];
+				incrementViews(ctx.query.id);
+			}
+			else
+			{
+				ctx.body = "Can't see anymore!";
+			}
+		}
+		else
+		{
+			ctx.status = 404;
+		}
+		await next();
 	}
 
 	function getValues(body) {
@@ -75,15 +116,35 @@ ALLOWED_LANGUAGES = ['Bash', 'C', 'Javascript', 'Python'];
 			values.language = "None";
 		if (values.max_views === undefined || isNaN(parseInt(values.max_views)) || parseInt(values.max_views) < 1)
 			values.max_views = -1;
+		if (values.public === undefined)
+			values.public = 1;
+		else
+			values.public = 0;
 
-		const query = await db.prepare("SELECT COUNT(*) AS Count FROM pastes WHERE short_url = (?)");
-		do {
-			shortUrl = generateShortUrl();
-			count = (await query.all(shortUrl))[0].Count;
-		} while (count != 0)
-
-		var stmt = await db.prepare("INSERT INTO pastes (short_url, author, title, content, language, num_views, max_views) VALUES (?, ?, ?, ?, ?, ?, ?)");
-		await stmt.run(shortUrl, values.author, values.title, values.content, values.language, 0, values.max_views);
+		var stmt = await db.prepare("INSERT INTO pastes (\
+														id,\
+														author,\
+														title,\
+														content,\
+														language,\
+														insertion_date,\
+														expiration_date,\
+														num_views,\
+														max_views,\
+														public\
+														) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+		await stmt.run(
+						await generateUniqueId(),
+						values.author,
+						values.title,
+						values.content,
+						values.language,
+						Date.now(),
+						Date.now() + 60*1000,
+						0,
+						values.max_views,
+						values.public
+					  );
 
 		ctx.status = 200;
 		await next();
@@ -93,7 +154,7 @@ ALLOWED_LANGUAGES = ['Bash', 'C', 'Javascript', 'Python'];
 	api.use(koaBody());
 	const apiRouterMiddleware = createRouter({
 		GET: {
-			'/paste/:id': handleGetPaste
+			'/paste': handleGetPaste
 		},
 		POST: {
 			'/paste': handlePasteUpload
