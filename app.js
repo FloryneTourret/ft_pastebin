@@ -2,6 +2,7 @@ const createRouter = require('koa-bestest-router');
 const Koa = require('koa');
 const koaBody = require('koa-body');
 const mount = require('koa-mount');
+const rewrite = require('koa-rewrite');
 const serve = require('koa-static');
 const sqlite = require('sqlite');
 
@@ -87,7 +88,6 @@ ALLOWED_LANGUAGES = ['Bash', 'C', 'Javascript', 'Python'];
 			if ((data[0].max_views == -1 || data[0].num_views < data[0].max_views) &&
 				(data[0].expiration_date == -1 || Date.now() < data[0].expiration_date))
 			{
-				// TODO json stringify?
 				ctx.body = data[0];
 				incrementViews(ctx.query.id);
 			}
@@ -167,7 +167,7 @@ ALLOWED_LANGUAGES = ['Bash', 'C', 'Javascript', 'Python'];
 						values.public
 					  );
 
-		ctx.status = 201;
+		ctx.status = 302;
 		ctx.set('Location', ctx.origin + '/' + values.id);
 		await next();
 	}
@@ -184,21 +184,15 @@ ALLOWED_LANGUAGES = ['Bash', 'C', 'Javascript', 'Python'];
 	}, true);
 	api.use(apiRouterMiddleware);
 
-	const statics = new Koa();
-	statics.use(serve('./statics/'));
-
 	const app = new Koa();
-	app.use(mount('/api', api));
-	app.use(mount('/', statics));
-	const appRouterMiddleware = createRouter({
-		GET: {
-			'/:id': async (ctx, next) => {
-				console.log(`${ctx.params.id}`);
-			}
-		},
-	}, true);
-	app.use(appRouterMiddleware);
-	app.listen(3000);
 
-	//db.close();
+	app.use(mount('/api', api));
+
+
+	app.use(rewrite('/:id', '/paste.html'));
+	app.use(rewrite('/', '/index.html'));
+
+	app.use(serve('./statics/'));
+
+	app.listen(3000);
 })();
