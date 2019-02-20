@@ -5,7 +5,7 @@ include('header.php');
 
 <div class="col-md-10 offset-md-1 jumbotron">
 
-    <form autocomplete="off" method="post" action="test.php">
+    <form autocomplete="off" method="post" action="A REMPLIRIIRIRIRIRirIRIRIRIR">
         <div class="form-group">
             <label for="exampleFormControlInput1">Paste name || title</label>
             <input type="text" class="form-control" id="exampleFormControlInput1" placeholder="Title" name="title">
