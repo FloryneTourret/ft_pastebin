@@ -1,21 +1,13 @@
 #pastebin {
     border: 1px solid black;
     border-radius: 5px;
-    box-shadow: 2px;
+    box-shadow: 0 10px 20px rgba(0,0,0,0.19), 0 6px 6px rgba(0,0,0,0.23);
 }
 
 #editor {
     height: 500px;
 }
 
-* { box-sizing: border-box; }
-body {
-  font: 16px Arial;
-  background-image: url('https://i.gifer.com/4cDI.gif');
-  background-repeat: no-repeat;
-  background-size: cover;
-  height: 100vh;
-}
 .autocomplete {
   /*the container must be positioned relative:*/
   position: relative;

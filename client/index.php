@@ -1,80 +1,38 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <!--Import Google Icon Font-->
-    <link rel="stylesheet" href="https:/stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
-    <link rel="stylesheet" href="https:/cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.13.2/css/bootstrap-select.min.css">
+<?php
 
-    <!--Let browser know website is optimized for mobile-->
-    <link rel="stylesheet" href="/assets/css/style.css">
-</head>
-
-<body>
-<nav class="navbar navbar-light" style="background-color:#2CFFDC ;">
-    <a class="navbar-brand" href="/">Ft_pastebin</a>
-    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
-        <span class="navbar-toggler-icon"></span>
-    </button>
-    <div class="collapse navbar-collapse" id="navbarNavDropdown">
-        <ul class="navbar-nav">
-            <li class="nav-item active">
-                <a class="nav-link" href="/">Home<span class="sr-only">(current)</span></a>
-            </li>
-            <?php if (!isset($_SESSION['id'])): ?>
-                <li class="nav-item active">
-                    <a class="nav-link" href="/login.php">Login<span class="sr-only">(current)</span></a>
-                </li>
-                <li class="nav-item active">
-                    <a class="nav-link" href="/register.php">Register</a>
-                </li>
-            <?php endif;
-            if (isset($_SESSION['id'])): ?>
-                <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                        Disconnect
-                    </a>
-                    <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
-                        <a class="dropdown-item" href="#">Action</a>
-                        <a class="dropdown-item" href="#">Another action</a>
-                        <a class="dropdown-item" href="#">Something else here</a>
-                    </div>
-                </li>
-            <?php endif; ?>
-        </ul>
-    </div>
-</nav>
+include('header.php');
+?>
 
 <div class="col-md-10 offset-md-1 jumbotron">
 
-    <form autocomplete="off" method="post" target="index.php/Home/">
+    <form autocomplete="off" method="post" action="test.php">
         <div class="form-group">
-            <label for="exampleFormControlInput1">Paste name/title</label>
-            <input type="text" class="form-control" id="exampleFormControlInput1" placeholder="Title">
+            <label for="exampleFormControlInput1">Paste name || title</label>
+            <input type="text" class="form-control" id="exampleFormControlInput1" placeholder="Title" name="title">
         </div>
         <div class="form-group">
             <label for="exampleFormControlInput1">Author</label>
-            <input type="text" class="form-control" id="exampleFormControlInput1" placeholder="Author name">
+            <input type="text" class="form-control" id="exampleFormControlInput1" placeholder="Author name" name="author">
         </div>
         <div class="form-group">
             <label style="line-height:24px;">Private</label>
             <label class="switch">
-                <input type="checkbox" name="resolu">
+                <input type="checkbox" name="public">
                 <span class="slider round"></span>
             </label>
         </div>
         <div class="form-group">
             <label for="exampleFormControlSelect1">Available time</label>
-            <select class="form-control" id="exampleFormControlSelect1">
-                <option>1 minute</option>
-                <option>1 hour</option>
-                <option>1 day</option>
-                <option>Forever</option>
+            <select class="form-control" id="exampleFormControlSelect1" name="expiration_date">
+                <option value="1m">1 minute</option>
+                <option value="1h">1 hour</option>
+                <option value="1d">1 day</option>
+                <option value="forever">Forever</option>
             </select>
         </div>
         <div class="form-group">
             <label for="exampleFormControlInput1">Access limit</label>
-            <input type="number" class="form-control" id="exampleFormControlInput1" placeholder="0">
+            <input type="number" class="form-control" id="exampleFormControlInput1" placeholder="0" name="max_views">
         </div>
         <div class="form-group">
             <label for="exampleFormControlInput1">Select language</label>
@@ -93,7 +51,8 @@
 
             <div id="editor" class="form-group"></div>
         </div>
-        <button type="submit" class="btn btn-primary">Submit</button>
+        <input id="content_paste" type="hidden" name="content" value="">
+        <button type="submit" class="btn btn-primary" onclick="put_content();">Submit</button>
     </form>
 </div>
 
@@ -117,6 +76,14 @@
     {
         var textLanguage = document.getElementById("language_input");
         editor.session.setMode("ace/mode/" + textLanguage.value.toLowerCase());
+    }
+
+    function put_content()
+    {
+        var text = editor.getValue();
+        var input = document.getElementById("content_paste");
+        input.value = text;
+        console.log(input.value);
     }
 
 
