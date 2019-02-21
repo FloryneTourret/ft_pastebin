@@ -8,6 +8,11 @@
     height: 500px;
 }
 
+.row {
+  width: 90%;
+  margin: auto;
+}
+
 .autocomplete {
   /*the container must be positioned relative:*/
   position: relative;
