@@ -31,3 +31,14 @@ body {
     margin-left: 10px;
     margin-right: 10px;
 }
+
+.max-paste {
+    min-height: 10vh;
+    background-color: slategray;
+    opacity: 0.95;
+    margin-top: 5vh;
+    padding: 50px;
+    border-radius: 10px;
+    margin-left: 10px;
+    margin-right: 10px;
+}
