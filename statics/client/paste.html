@@ -94,7 +94,7 @@
                 document.getElementById('paste-content').textContent = data.content;
                 document.getElementById('pre').textContent = data.content;
                 document.getElementById('insertion').innerHTML = "Posté le :<br>"+date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()+" à "+date.getHours()+"h"+date.getMinutes();
-                if(data.expiration_date)
+                if(data.expiration_date != -1)
                     document.getElementById('expiration').innerHTML = "Visible jusqu'au :<br>"+exp.getDate()+"/"+(exp.getMonth()+1)+"/"+exp.getFullYear()+" à "+exp.getHours()+"h"+exp.getMinutes();
                 editor.insert(data.content);
 
