@@ -66,7 +66,7 @@
         <div class="paste-zone col-md-6">
             <input type="text" value="" id="paste">
             <p id="paste-content"></p>
-            <div id="editor">
+            <div id="edit"><div id="editor"></div>
             </div>
             <div id="brut">
                 <pre id="pre"></pre>
@@ -87,7 +87,6 @@
 <script type="text/javascript">
     var request = new XMLHttpRequest();
     var title = "paste";
-    var language = "text";
 
     request.open('GET', 'http://'+window.location.host+'/api/paste'+window.location.pathname, true);
     request.onload = function () {
@@ -98,17 +97,21 @@
             var data = JSON.parse(this.response);
 
             if (request.status >= 200 && request.status < 400) {
+
+                var editor = ace.edit("editor");
+                editor.setTheme("ace/theme/monokai");
+                editor.session.setMode("ace/mode/"+data.language.toLowerCase());
+                editor.setReadOnly(true);
+
                 var date = new Date(data.insertion_date);
                 if(data.expiration_date)
                     var exp = new Date(data.expiration_date);
-                    
                 title = data.title;
                 document.getElementById('title').textContent= data.title;
                 document.getElementById('author').textContent= data.author;
-                if(data.language != "None")
-                    language = data.language
-                else
-                    data.language = "Plaintext"
+                if(data.language == "None")
+                    data.language = "text"
+                language = data.language
                 document.getElementById('language').textContent = data.language;
                 document.getElementById('paste').value = data.content;
                 document.getElementById('paste-content').textContent = data.content;
@@ -117,6 +120,7 @@
                 if(data.expiration_date)
                     document.getElementById('expiration').innerHTML = "Visible jusqu'au :<br>"+exp.getDate()+"/"+(exp.getMonth()+1)+"/"+exp.getFullYear()+" à "+exp.getHours()+"h"+exp.getMinutes();
                 editor.insert(data.content);
+
             }
         }
         else{
@@ -128,24 +132,6 @@
 
     request.send();
 
-    var editor = ace.edit("editor");
-    editor.setTheme("ace/theme/monokai");
-    editor.session.setMode("ace/mode/"+language);
-    editor.setReadOnly(true);
-    function set_language()
-    {
-        var textLanguage = document.getElementById("language_input");
-        editor.session.setMode("ace/mode/" + textLanguage.value.toLowerCase());
-    }
-
-    function put_content()
-    {
-        var text = editor.getValue();
-        var input = document.getElementById("content_paste");
-        input.value = text;
-        console.log(input.value);
-    }
-
     function mydownload()
     {
         var text = document.getElementById('paste-content').innerHTML;
@@ -153,11 +139,14 @@
     }
 
     function myFunction() {
+        document.getElementById("edit").style = ("box-shadow: 0 1rem 3rem white");
         var copyText = document.getElementById("paste");
         copyText.select();
         document.execCommand("copy");
+        setTimeout( function(){
+            document.getElementById("edit").style= ("box-shadow: 0");
+        }, 300)
       }
-
 </script>
 </body>
 </html>

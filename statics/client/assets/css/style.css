@@ -7,6 +7,10 @@
 #editor {
     height: 500px;
 }
+#edit
+{
+  transition: .2s;
+}
 
 .row {
   width: 90%;
