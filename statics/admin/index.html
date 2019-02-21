@@ -62,7 +62,7 @@ request.open('GET', 'http://'+window.location.hostname+':4242/api/paste/all', tr
 request.onload = function () {
             // Begin accessing JSON data here
     var data = JSON.parse(this.response);
-    console.log(data);
+    // console.log(data);
     if (request.status >= 200 && request.status < 400) {
         for(i = 0; i < data.length; i++)
         {
