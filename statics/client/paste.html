@@ -84,7 +84,7 @@
                 editor.session.setMode("ace/mode/"+data.language.toLowerCase());
                 editor.setReadOnly(true);
                 var date = new Date(data.insertion_date);
-                if(data.expiration_date)
+                if(data.expiration_date != -1)
                     var exp = new Date(data.expiration_date);
                 title = data.title;
                 document.getElementById('title').textContent= data.title;
