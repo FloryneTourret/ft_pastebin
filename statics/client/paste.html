@@ -42,14 +42,22 @@
         </ul>
     </div>
 </nav>
+
+    
  <section class="content-tools row" id="dl">
-            <div class="col-md-1 offset-md-10"><img id="download" src="/assets/img/download.png" alt="download-icon" onclick="mydownload();"><img id="clipboard" src="/assets/img/clipboard.png" alt="download-icon" onclick="copytoclipboard();"></div>
+     <div class="col-md-10">
+        <h1 id="title"></h1>
+     </div>
+    <div class="col-md-1">
+        <img id="download" src="/assets/img/download.png" alt="download-icon" onclick="mydownload();">
+        <img id="clipboard" src="/assets/img/clipboard.png" alt="download-icon" onclick="copytoclipboard();">
+    </div>
     </section>
     <section class="content row" id="content">
         <div class="author-zone col-md-2 offset-2">
-            <h1 id="title"></h1>
             <p id="author"></p>
             <p id="insertion"></p>
+            <p id="expiration"></p>
             <p id="language"></p>
         </div>
         <div class="paste-zone col-md-6">
@@ -93,10 +101,11 @@
                     language = data.language
                 else
                     data.language = "Plaintext"
-                document.getElementById('language').textContent= data.language;
-                document.getElementById('paste-content').textContent= data.content;
-                document.getElementById('pre').textContent= data.content;
-                document.getElementById('insertion').textContent= date.toDateString();
+                document.getElementById('language').textContent = data.language;
+                document.getElementById('paste-content').textContent = data.content;
+                document.getElementById('pre').textContent = data.content;
+                document.getElementById('insertion').innerHTML = "Posté le :<br>"+date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()+" à "+date.getHours()+"h"+date.getMinutes();
+                document.getElementById('expiration').innerHTML = "Visible jusqu'au :<br>"+date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()+" à "+date.getHours()+"h"+date.getMinutes();
                 editor.insert(data.content);
             }
         }
