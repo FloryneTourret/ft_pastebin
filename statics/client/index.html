@@ -127,11 +127,6 @@
     <script src="/assets/js/autocomplete.js"></script>
 
     <script>
-        function redirect(id) {
-
-            window.location.href = "http://localhost:3000/" + id.id;
-        }
-
         function timeSince(date) {
 
             var seconds = Math.floor((new Date() - date) / 1000);
@@ -192,7 +187,6 @@
                     var card = document.createElement('div');
                     card.setAttribute('id', data[i].id);
                     card.setAttribute('class', 'col-md-12');
-                    card.setAttribute('onclick', 'redirect(' + data[i].id + ');');
                     document.getElementById('latest-pastes').appendChild(card);
 
                     var div = document.createElement('div');
@@ -204,8 +198,9 @@
                     cardBody.setAttribute('class', 'card-body');
                     div.appendChild(cardBody);
 
-                    var title = document.createElement('h5');
+                    var title = document.createElement('a');
                     title.setAttribute('class', 'card-title');
+                    title.setAttribute('href', 'http://localhost:3000/'+data[i].id+'/');
                     title.innerHTML = data[i].title;
                     cardBody.appendChild(title);
 
