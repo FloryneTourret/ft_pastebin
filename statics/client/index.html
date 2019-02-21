@@ -183,7 +183,6 @@
 
             if (request.status >= 200 && request.status < 400) {
                 for (var i = 0; i < data.length; i++) {
-                    console.log(data);
                     var card = document.createElement('div');
                     card.setAttribute('id', data[i].id);
                     card.setAttribute('class', 'col-md-12');
@@ -210,8 +209,6 @@
                     cardBody.appendChild(p);
                 }
 
-            } else {
-                console.log('error');
             }
         }
 
