@@ -60,6 +60,10 @@ input[type=submit] {
     background-color: white;
 }
 
+#latest-pastes {
+  margin-top: 60px;
+}
+
 .switch {
 	margin-left: 1vw;
 	position: relative;

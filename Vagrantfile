@@ -68,5 +68,10 @@ Vagrant.configure("2") do |config|
     apt -y install curl
     curl -sL https://deb.nodesource.com/setup_11.x | bash -
     apt -y install nodejs sqlite3
+    chown vagrant:vagrant /srv
+    cp -a /vagrant/{app.js,package.json,statics} /srv
+    cd /srv
+    sudo -u vagrant npm install
+    nohup sudo -u vagrant node app.js &
   SHELL
 end
