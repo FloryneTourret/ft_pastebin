@@ -132,7 +132,7 @@ ALLOWED_LANGUAGES = [
 			values.language,
 			values.max_views,
 			values.public,
-			values.id
+			ctx.params.id
 		);
 
 		if (data.stmt.changes == 1)
