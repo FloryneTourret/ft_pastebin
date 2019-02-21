@@ -280,7 +280,7 @@ ALLOWED_LANGUAGES = [
 		return requestOrigin;
 	}
 
-	const whitelist = ['http://localhost:3000', 'http://localhost:4242', 'http://192.168.33.10:3000', 'http://192.168.33.10:4242'];
+	const whitelist = ['http://localhost', 'http://localhost:3000', 'http://localhost:4242', 'http://192.168.33.10', 'http://192.168.33.10:3000', 'http://192.168.33.10:4242', ];
 
 	const clientApi = new Koa();
 	clientApi.use(cors({origin: checkOriginAgainstWhitelist}));
