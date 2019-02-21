@@ -304,6 +304,11 @@ ALLOWED_LANGUAGES = [
 	const client = new Koa();
 	client.keys = ['oaz3boh1lezahGhu'];
 	client.use(session(client));
+	client.use(async function (ctx, next) {
+		ctx.session.activate = true;
+		await next();
+	});
+
 	client.use(mount('/api', clientApi));
 	client.use(rewrite('/:id', '/paste.html'));
 	client.use(rewrite('/', '/index.html'));
