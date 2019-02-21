@@ -17,7 +17,7 @@ nav{
 
 .author-zone {
     margin-top: 2vh;
-    height: 1050px;
+    height: 1020px;
     background-color: rgba(39, 65, 100, 0.376);
     opacity: 0.95;
     margin-right: 20px;
@@ -57,7 +57,7 @@ nav{
 .paste-zone {
     margin-top: 2vh;
     margin-left: 20px;
-    height: 1100px;;
+    height: 1040px;;
     opacity: 0.95;
     padding: 0;
 }
@@ -109,7 +109,7 @@ nav{
 
 #brut {
     height: 500px;
-    margin-top: 50px;
+    margin-top: 20px;
     background-color: rgba(216, 222, 231, 0.376);
     padding: 20px;
     opacity: 0.95;
