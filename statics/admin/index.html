@@ -7,6 +7,7 @@
     <link rel="stylesheet" href="assets/admin.css">
     <link rel="stylesheet" href="https:/stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
     <link rel="stylesheet" href="https:/cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.13.2/css/bootstrap-select.min.css">
+    <link rel="icon" href="/assets/img/favicon.ico">
     <title>Admin View</title>
 </head>
 <body>
@@ -89,9 +90,9 @@ request.onload = function () {
             labelcontent.innerHTML = "Paste content: <br>";
             var author = document.createElement("input");
             var labelmaxview = document.createElement("label");
-            labelmaxview.innerHTML = "Max views: ";
+            labelmaxview.innerHTML = "Max views: <br>";
             var labelpublic = document.createElement("label");
-            labelpublic.innerHTML = "Public: "
+            labelpublic.innerHTML = "<br>Public: <br>"
             author.setAttribute("name", "author");
             author.value = data[i].author;
             var authorname = document.createTextNode(data[i].author);
@@ -101,6 +102,9 @@ request.onload = function () {
             maxview.setAttribute("name", "max_views");
             maxview.value = data[i].max_views;
             public.setAttribute("name", "public");
+            public.setAttribute("type", "number");
+            public.setAttribute("min", "0");
+            public.setAttribute("max", "1");
             public.value = data[i].public;
             name.setAttribute("name", "title");
             name.value = data[i].title;
