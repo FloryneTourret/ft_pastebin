@@ -108,6 +108,43 @@ ALLOWED_LANGUAGES = [
 		await next();
 	}
 
+	async function handlePatchPaste(ctx, next) {
+		try {
+			var values = setValues(ctx.request.body);
+		} catch(e) {
+			ctx.status = 400;
+			await next();
+			return ;
+		}
+
+		const query = await db.prepare("UPDATE pastes SET \
+											author = (?), \
+											title = (?), \
+											content = (?), \
+											language = (?), \
+											expiration_date = (?), \
+											max_views = (?), \
+											public = (?) \
+											WHERE id = (?)");
+		const data = await query.run(
+			values.author,
+			values.title,
+			values.content,
+			values.language,
+			values.expiration_date,
+			values.max_views,
+			values.public,
+			values.id
+		);
+
+		if (data.stmt.changes == 1)
+			ctx.status = 200;
+		else
+			ctx.status = 204;
+
+		await next();
+	}
+
 	async function handleGetPaste(ctx, next) {
 		const query = await db.prepare("SELECT * FROM pastes WHERE id = (?)");
 		const data = await query.all(ctx.params.id);
@@ -141,8 +178,8 @@ ALLOWED_LANGUAGES = [
 		await next();
 	}
 
-	function getValues(body) {
-		return {
+	function setValues(body) {
+		values = {
 			author: body['author'],
 			title: body['title'],
 			content: body['content'],
@@ -151,18 +188,10 @@ ALLOWED_LANGUAGES = [
 			max_views: body['max_views'],
 			public: body['public'],
 		};
-	}
-
-	async function handlePasteUpload(ctx, next) {
-		// We answer 404 when there is some missing parameters
-		// https://stackoverflow.com/a/3050624
-
-		var values = getValues(ctx.request.body);
 
 		if (values.content === undefined || values.content.length < 1)
 		{
-			ctx.status = 404;
-			await next();
+			throw new Error('Whoops!');
 			return ;
 		}
 
@@ -192,6 +221,21 @@ ALLOWED_LANGUAGES = [
 			values.public = 1;
 		else
 			values.public = 0;
+
+		return values;
+	}
+
+	async function handlePasteUpload(ctx, next) {
+		// We answer 404 when there is some missing parameters
+		// https://stackoverflow.com/a/3050624
+
+		try {
+			var values = setValues(ctx.request.body);
+		} catch(e) {
+			ctx.status = 404;
+			await next();
+			return ;
+		}
 
 		values.id = await generateUniqueId();
 
@@ -268,6 +312,9 @@ ALLOWED_LANGUAGES = [
 		},
 		GET: {
 			'/paste/all':    handleGetAll,
+		},
+		PATCH: {
+			'/paste/:id': handlePatchPaste,
 		},
 	}, true);
 	adminApi.use(adminApiRouterMiddleware);
