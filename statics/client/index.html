@@ -75,7 +75,7 @@
                     <div id="editor" class="form-group"></div>
                 </div>
                 <input id="content_paste" type="hidden" name="content" value="">
-                <button type="submit" class="btn btn-primary" onclick="put_content();">Submit</button>
+                <button type="submit" class="btn btn-primary" id="submit">Submit</button>
             </form>
         </div>
 
@@ -144,11 +144,16 @@
             editor.session.setMode("ace/mode/" + textLanguage.value.toLowerCase());
         }
 
-        function put_content() {
+        document.querySelector("#submit").addEventListener("click", function(event) {
             var text = editor.getValue();
-            var input = document.getElementById("content_paste");
-            input.value = text;
-        }
+            if(text)
+            {
+                var input = document.getElementById("content_paste");
+                input.value = text;
+            }
+            else 
+                event.preventDefault();
+        }, false);
 
         var request = new XMLHttpRequest();
 
