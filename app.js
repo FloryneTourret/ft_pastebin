@@ -72,6 +72,18 @@ ALLOWED_LANGUAGES = ['Bash', 'C', 'Javascript', 'Python'];
 		await query.run(id);
 	}
 
+	async function handleDeletePaste(ctx, next) {
+		const query = await db.prepare("UPDATE pastes SET content = '' WHERE id = (?) AND content != ''");
+		const data = await query.run(ctx.params.id);
+
+		if (data.stmt.changes == 1)
+			ctx.status = 200;
+		else
+			ctx.status = 204;
+
+		await next();
+	}
+
 	async function handleGetPaste(ctx, next) {
 		const query = await db.prepare("SELECT * FROM pastes WHERE id = (?)");
 		const data = await query.all(ctx.params.id);
@@ -177,12 +189,15 @@ ALLOWED_LANGUAGES = ['Bash', 'C', 'Javascript', 'Python'];
 	const api = new Koa();
 	api.use(koaBody());
 	const apiRouterMiddleware = createRouter({
+		DELETE: {
+			'/paste/:id': handleDeletePaste,
+		},
 		GET: {
 			'/paste/latest': handleGetLatest,
 			'/paste/:id': handleGetPaste,
 		},
 		POST: {
-			'/paste': handlePasteUpload
+			'/paste': handlePasteUpload,
 		}
 	}, true);
 	api.use(apiRouterMiddleware);
