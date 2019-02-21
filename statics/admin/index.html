@@ -81,10 +81,11 @@ request.onload = function () {
             {
                 div.classList.add("max-paste");
                 var fullview = document.createElement("p");
-                fullview.innerHTML = "Ce paste a atteint le max de views";
+                fullview.innerHTML = "Ce paste a atteint le max de views <br> <hr>";
                 div.appendChild(fullview);
             }
             var content = document.createElement("input");
+            content.setAttribute("name", "content");
             if (data[i].content)
             {
                 content.value = data[i].content;
@@ -118,6 +119,10 @@ request.onload = function () {
             myupdate.setAttribute('id', data[i].id);
             mydelete.setAttribute('id', data[i].id);
             myupdate.setAttribute('type', 'submit');
+            myupdate.classList.add("button");
+            myupdate.classList.add("btn-info");
+            mydelete.classList.add("button");
+            mydelete.classList.add("btn-danger");
             mydelete.setAttribute('onclick', 'delete_post("id-'+data[i].id+'");');
             name.appendChild(nametext);
             author.appendChild(authorname);
