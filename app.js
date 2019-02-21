@@ -97,7 +97,12 @@ ALLOWED_LANGUAGES = ['Bash', 'C', 'Javascript', 'Python'];
 	}
 
 	async function handleGetLatest(ctx, next) {
+		const query = await db.prepare("SELECT id, author, title, language, insertion_date FROM pastes WHERE public = 1 ORDER BY rowid DESC LIMIT 8");
+		const data = await query.all();
 
+		ctx.status = 200;
+		ctx.body = data;
+		await next();
 	}
 
 	function getValues(body) {
@@ -173,8 +178,8 @@ ALLOWED_LANGUAGES = ['Bash', 'C', 'Javascript', 'Python'];
 	api.use(koaBody());
 	const apiRouterMiddleware = createRouter({
 		GET: {
+			'/paste/latest': handleGetLatest,
 			'/paste/:id': handleGetPaste,
-			'/paste/latest': handleGetLatest
 		},
 		POST: {
 			'/paste': handlePasteUpload
