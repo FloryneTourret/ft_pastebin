@@ -96,6 +96,10 @@
     </form>
 </div>
 
+<div id="latest-pastes" class="row col-md-10 offset-md-1">
+
+</div>
+
 <!--JavaScript at end of body for optimized loading-->
 <!-- Latest compiled and minified JavaScript -->
 <!-- (Optional) Latest compiled and minified JavaScript translation files -->
@@ -125,6 +129,51 @@
         input.value = text;
         console.log(input.value);
     }
+
+    var request = new XMLHttpRequest();
+
+    request.open('GET', 'http://localhost:3000/api/paste/latest', true);
+    request.onload = function () {
+
+    // Begin accessing JSON data here
+    var data = JSON.parse(this.response);
+
+    if (request.status >= 200 && request.status < 400) {
+        for (var i = 0; i < data.length; i++) {
+            var card = document.createElement('div');
+            card.setAttribute('id', data[i].id);
+            card.setAttribute('class', 'col-md-6');
+            card.onclick = function() {
+                window.location.href = "http://localhost:3000/" + card.id;
+            };
+            document.getElementById('latest-pastes').appendChild(card);
+
+            var div = document.createElement('div');
+            div.setAttribute('class', 'card');
+            div.setAttribute('style', 'margin:10px;')
+            card.appendChild(div);
+
+            var cardBody = document.createElement('div');
+            cardBody.setAttribute('class', 'card-body');
+            div.appendChild(cardBody);
+
+            var title = document.createElement('h5');
+            title.setAttribute('class', 'card-title');
+            title.innerHTML = data[i].title;
+            cardBody.appendChild(title);
+
+            var p = document.createElement('p');
+            p.setAttribute('class', 'card-text');
+            p.innerHTML = data[i].author;
+            cardBody.appendChild(p);
+        }
+
+    } else {
+        console.log('error');
+    }
+    }
+
+    request.send();
 
 
 </script>

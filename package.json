@@ -4,6 +4,7 @@
   "description": "",
   "main": "index.js",
   "dependencies": {
+    "@koa/cors": "^2.2.3",
     "koa": "^2.7.0",
     "koa-bestest-router": "^1.0.2",
     "koa-better-serve": "^2.0.7",
