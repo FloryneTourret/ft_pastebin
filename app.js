@@ -189,10 +189,10 @@ ALLOWED_LANGUAGES = ['Bash', 'C', 'Javascript', 'Python'];
 	app.use(mount('/api', api));
 
 
-	app.use(rewrite('/:id', '/paste.html'));
-	app.use(rewrite('/', '/index.html'));
+	app.use(rewrite('/:id', 'paste.html'));
+	app.use(rewrite('/', 'index.html'));
 
-	app.use(serve('./statics/'));
+	app.use(serve('./statics/client'));
 
 	app.listen(3000);
 })();
