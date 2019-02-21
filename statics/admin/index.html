@@ -88,10 +88,20 @@ request.onload = function () {
             var labelcontent = document.createElement("label");
             labelcontent.innerHTML = "Paste content: <br>";
             var author = document.createElement("input");
+            var labelmaxview = document.createElement("label");
+            labelmaxview.innerHTML = "Max views: ";
+            var labelpublic = document.createElement("label");
+            labelpublic.innerHTML = "Public: "
             author.setAttribute("name", "author");
             author.value = data[i].author;
             var authorname = document.createTextNode(data[i].author);
             var name = document.createElement("input");
+            var public = document.createElement("input");
+            var maxview = document.createElement("input");
+            maxview.setAttribute("name", "max_views");
+            maxview.value = data[i].max_views;
+            public.setAttribute("name", "public");
+            public.value = data[i].public;
             name.setAttribute("name", "title");
             name.value = data[i].title;
             var nametext = document.createTextNode(data[i].title)
@@ -117,6 +127,10 @@ request.onload = function () {
             div.appendChild(author);
             div.appendChild(labelcontent);
             div.appendChild(content);
+            div.appendChild(labelmaxview);
+            div.appendChild(maxview);
+            div.appendChild(labelpublic);
+            div.appendChild(public);
             var section = document.getElementById('list-paste');
             if (data[i].content)
             {
