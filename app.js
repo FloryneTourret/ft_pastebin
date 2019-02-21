@@ -187,15 +187,19 @@ ALLOWED_LANGUAGES = ['Bash', 'C', 'Javascript', 'Python'];
 	}, true);
 	api.use(apiRouterMiddleware);
 
-	const app = new Koa();
+	const client = new Koa();
 
-	app.use(mount('/api', api));
+	client.use(mount('/api', api));
 
 
-	app.use(rewrite('/:id', '/paste.html'));
-	app.use(rewrite('/', '/index.html'));
+	client.use(rewrite('/:id', '/paste.html'));
+	client.use(rewrite('/', '/index.html'));
 
-	app.use(serve('./statics/client'));
+	client.use(serve('./statics/client'));
 
-	app.listen(3000);
+	client.listen(3000);
+
+	const admin = new Koa();
+	admin.use(serve('./statics/admin'));
+	admin.listen(4242);
 })();
