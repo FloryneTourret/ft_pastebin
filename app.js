@@ -135,10 +135,8 @@ ALLOWED_LANGUAGES = [
 			ctx.params.id
 		);
 
-		if (data.stmt.changes == 1)
-			ctx.status = 200;
-		else
-			ctx.status = 204;
+		ctx.status = 302;
+		ctx.set('Location', ctx.origin + '/');
 
 		await next();
 	}
