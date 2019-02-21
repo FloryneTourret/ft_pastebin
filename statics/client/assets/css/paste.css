@@ -108,3 +108,29 @@ nav{
 #author{
     padding-top: 25vh;
 }
+
+
+@media screen and (max-width: 767px) {
+    .author-zone {
+        margin-top: 2vh;
+        height: 500px;
+        background-color: rgba(44, 255, 220, 0.397);
+        opacity: 0.95;
+        margin-left: 5vw;
+        width: 90vw;
+    }
+    .paste-zone
+    {
+        margin-left: 5vw;
+        width: 90vw;
+    }
+    #author{
+        padding-top: 10vh;
+    }
+    #download{
+        margin-left: 0;
+    }
+    #clipboard{
+        margin-left: 0;
+    }
+  }
