@@ -1,3 +1,4 @@
+const cors = require('@koa/cors');
 const createRouter = require('koa-bestest-router');
 const Koa = require('koa');
 const koaBody = require('koa-body');
@@ -5,6 +6,9 @@ const mount = require('koa-mount');
 const rewrite = require('koa-rewrite');
 const serve = require('koa-static');
 const sqlite = require('sqlite');
+
+ADMIN_PORT = 4242;
+CLIENT_PORT = 3000;
 
 ALLOWED_LANGUAGES = ['Bash', 'C', 'Javascript', 'Python'];
 
@@ -186,8 +190,21 @@ ALLOWED_LANGUAGES = ['Bash', 'C', 'Javascript', 'Python'];
 		await next();
 	}
 
+	function checkOriginAgainstWhitelist(ctx) {
+ 		const requestOrigin = ctx.headers.origin;
+ 		if (!whitelist.includes(requestOrigin)) {
+ 			return ctx.throw(403, `${requestOrigin} is not a valid origin`);
+ 		}
+		return requestOrigin;
+	}
+
 	const api = new Koa();
+
+	const whitelist = ['http://localhost:3000', 'http://localhost:4242'];
+	api.use(cors({origin: checkOriginAgainstWhitelist}));
+
 	api.use(koaBody());
+
 	const apiRouterMiddleware = createRouter({
 		DELETE: {
 			'/paste/:id': handleDeletePaste,
@@ -212,9 +229,9 @@ ALLOWED_LANGUAGES = ['Bash', 'C', 'Javascript', 'Python'];
 
 	client.use(serve('./statics/client'));
 
-	client.listen(3000);
+	client.listen(CLIENT_PORT);
 
 	const admin = new Koa();
 	admin.use(serve('./statics/admin'));
-	admin.listen(4242);
+	admin.listen(ADMIN_PORT);
 })();
