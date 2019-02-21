@@ -95,7 +95,7 @@ ALLOWED_LANGUAGES = ['Bash', 'C', 'Javascript', 'Python'];
 		{
 			ctx.status = 200;
 			if ((data[0].max_views == -1 || data[0].num_views < data[0].max_views) &&
-				(data[0].expiration_date == -1 || Date.now() < data[0].expiration_date))
+				(data[0].expiration_date == -1 || Date.now() < data[0].expiration_date) && data[0].content.length > 0)
 			{
 				ctx.body = data[0];
 				incrementViews(ctx.params.id);

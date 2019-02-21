@@ -7,12 +7,7 @@ body
     background-image: url('https://code2prog.com/wp-content/uploads/2015/01/ceystalhorizon-flat-design-wallpapers-HD-free-wallpapers-backgrounds-images-FHD-4k-download-2014-2015-2016.jpg');
     background-repeat: no-repeat;
     background-size: cover;
-}
-
-session {
-    border: 1px solid black;
-    border-radius: 5px;
-    box-shadow: 0 10px 20px rgba(0,0,0,0.19), 0 6px 6px rgba(0,0,0,0.23);
+    min-height: 100vh;
 }
 
 nav{
@@ -24,8 +19,8 @@ nav{
 }
 
 .author-zone {
-    margin-top: 20vh;
-    min-height: 20vh;
+    margin-top: 2vh;
+    height: 1050px;
     background-color: whitesmoke;
     opacity: 0.95;
     margin-right: 20px;
@@ -35,7 +30,13 @@ nav{
     font-size: 30px;
     color: black;
     text-align: center;
-    padding-top: 8vh;
+    padding-top: 5vh;
+    font-size: 1.2em;
+}
+
+.content-tools
+{
+    margin-top: 3vh;
 }
 
 .content-tools img#download
@@ -57,10 +58,47 @@ nav{
 }
 
 .paste-zone {
-    padding: 20px;
-    margin-top: 20vh;
-    min-height: 20vh;
+    margin-top: 2vh;
+    margin-left: 20px;
+    height: 500px;
     background-color: whitesmoke;
     opacity: 0.95;
-    margin-left: 20px;
+    padding: 0;
+}
+
+.expire{
+    text-align: center;
+    margin-top: 40vh;
+    width: 100vw;
+    color: #fff;
+    font-size: 5em;
+}
+
+#title
+{
+    color: #00A1A2;
+    text-align: center;
+    font-size: 1.4em;
+    padding-top: 25vh
+}
+
+#language{
+    font-style: italic;
+    font-size: 1em;
+}
+
+#insertion{
+    font-style: italic;
+    font-size: 1em;
+    padding-top: 1vh;
+}
+
+#paste-content{
+    display: none;
+}
+
+#brut {
+    height: 500px;
+    margin-top: 50px;
+    background-color: #fff;
 }
