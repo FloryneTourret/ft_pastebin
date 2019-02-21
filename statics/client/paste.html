@@ -52,32 +52,7 @@
     <section class="content-tools row">
             <div class="col-md-1 offset-md-10"><img id="download" src="/assets/img/download.png" alt="download-icon" onclick="mydownload();"><img id="clipboard" src="/assets/img/clipboard.png" alt="download-icon" onclick="copytoclipboard();"></div>
     </section>
-    <footer>
-        <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
-        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
-        <script src="/assets/js/download.js"></script>
-        <script type="text/javascript">
-
-            function mydownload()
-            {
-                var text = document.getElementById('paste-content').innerHTML;
-                download(text, "paste.txt", "text/plain");
-            }
-
-            function copytoclipboard()
-            {
-                var text = document.querySelector('#paste-content');
-                var range = document.createRange();
-                range.selectNode(text);
-                window.getSelection().addRange(range);
-                document.execCommand('copy');
-                window.getSelection().removeAllRanges();
-            }
-        </script>
-    </footer>
-</body>
-</html><!--JavaScript at end of body for optimized loading-->
+<!--JavaScript at end of body for optimized loading-->
 <!-- Latest compiled and minified JavaScript -->
 <!-- (Optional) Latest compiled and minified JavaScript translation files -->
 <script src="https:/code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
@@ -86,28 +61,26 @@
 <script src="https:/cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.13.2/js/bootstrap-select.min.js"></script>
 
 <script src="/assets/ace-builds/src-noconflict/ace.js" type="text/javascript" charset="utf-8"></script>
-<script src="/assets/js/autocomplete.js"></script>
 
-<script>
+<script src="/assets/js/download.js"></script>
+<script type="text/javascript">
 
-    var editor = ace.edit("editor");
-    editor.setTheme("ace/theme/monokai");
-    editor.session.setMode("ace/mode/text");
-    function set_language()
+    function mydownload()
     {
-        var textLanguage = document.getElementById("language_input");
-        editor.session.setMode("ace/mode/" + textLanguage.value.toLowerCase());
+        var text = document.getElementById('paste-content').innerHTML;
+        download(text, "paste.txt", "text/plain");
     }
 
-    function put_content()
+    function copytoclipboard()
     {
-        var text = editor.getValue();
-        var input = document.getElementById("content_paste");
-        input.value = text;
-        console.log(input.value);
+        var text = document.querySelector('#paste-content');
+        var range = document.createRange();
+        range.selectNode(text);
+        window.getSelection().addRange(range);
+        document.execCommand('copy');
+        window.getSelection().removeAllRanges();
     }
-
-
+      
 </script>
 </body>
 </html>
