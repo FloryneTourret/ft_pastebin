@@ -108,6 +108,7 @@ request.onload = function () {
             mydelete.classList.add("button");
             mydelete.classList.add("btn-danger");
             mydelete.setAttribute('onclick', 'delete_post("id-'+data[i].id+'");');
+            mydelete.setAttribute('type', 'button');
             name.appendChild(nametext);
             author.appendChild(authorname);
             div.appendChild(labeltitle);
@@ -116,12 +117,12 @@ request.onload = function () {
             div.appendChild(author);
             div.appendChild(labelcontent);
             div.appendChild(content);
+            var section = document.getElementById('list-paste');
             if (data[i].content)
             {
-                div.appendChild(mydelete);
                 div.appendChild(myupdate);
+                div.appendChild(mydelete);
             }
-            var section = document.getElementById('list-paste');
             section.appendChild(div);
             // console.log(data[i].author);
             // console.log(data[i].title);
