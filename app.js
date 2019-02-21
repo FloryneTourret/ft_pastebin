@@ -73,15 +73,8 @@ ALLOWED_LANGUAGES = ['Bash', 'C', 'Javascript', 'Python'];
 	}
 
 	async function handleGetPaste(ctx, next) {
-		if (ctx.query.id === undefined)
-		{
-			ctx.status = 404;
-			await next();
-			return ;
-		}
-
 		const query = await db.prepare("SELECT * FROM pastes WHERE id = (?)");
-		const data = await query.all(ctx.query.id);
+		const data = await query.all(ctx.params.id);
 		if (data.length > 0)
 		{
 			ctx.status = 200;
@@ -89,7 +82,7 @@ ALLOWED_LANGUAGES = ['Bash', 'C', 'Javascript', 'Python'];
 				(data[0].expiration_date == -1 || Date.now() < data[0].expiration_date))
 			{
 				ctx.body = data[0];
-				incrementViews(ctx.query.id);
+				incrementViews(ctx.params.id);
 			}
 			else
 			{
@@ -101,6 +94,10 @@ ALLOWED_LANGUAGES = ['Bash', 'C', 'Javascript', 'Python'];
 			ctx.status = 404;
 		}
 		await next();
+	}
+
+	async function handleGetLatest(ctx, next) {
+
 	}
 
 	function getValues(body) {
@@ -176,7 +173,8 @@ ALLOWED_LANGUAGES = ['Bash', 'C', 'Javascript', 'Python'];
 	api.use(koaBody());
 	const apiRouterMiddleware = createRouter({
 		GET: {
-			'/paste': handleGetPaste
+			'/paste/:id': handleGetPaste,
+			'/paste/latest': handleGetLatest
 		},
 		POST: {
 			'/paste': handlePasteUpload
