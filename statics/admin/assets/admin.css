@@ -3,7 +3,7 @@ body {
     background: url('http://www.gsfdcy.com/data/img1/57/1789382-minimal-wallpaper.jpg');
     background-repeat: no-repeat;
     background-size: cover;
-    height: 100vh;
+    min-height: 100vh;
 }
 
 #list-paste {
@@ -13,6 +13,16 @@ body {
 .one-paste {
     min-height: 10vh;
     background-color: whitesmoke;
+    opacity: 0.95;
+    widows: 100%;
+    margin-top: 5vh;
+    padding: 50px;
+    border-radius: 10px;
+}
+
+.deleted-paste {
+    min-height: 10vh;
+    background-color: tomato;
     opacity: 0.95;
     widows: 100%;
     margin-top: 5vh;

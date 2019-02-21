@@ -50,7 +50,7 @@
 
 var request = new XMLHttpRequest();
 
-request.open('GET', 'http://localhost:3000/api/paste/latest', true);
+request.open('GET', 'http://localhost:3000/api/paste/all', true);
 request.onload = function () {
             // Begin accessing JSON data here
     var data = JSON.parse(this.response);
@@ -62,6 +62,20 @@ request.onload = function () {
             var div = document.createElement("div");
             div.setAttribute("class", "paste-"+ data[i].id);
             div.classList.add("one-paste");
+            if (!(data[i].content))
+            {
+                div.classList.add("deleted-paste");
+            }
+            var content = document.createElement("p");
+            if (data[i].content)
+            {
+                var contenttext = document.createTextNode(data[i].content);
+            }
+            else
+            {
+                var contenttext = document.createTextNode("Le paste a expiré ou a été supprimé");
+            }
+            content.appendChild(contenttext);
             var author = document.createElement("p");
             var authorname = document.createTextNode(data[i].author);
             var mydelete = document.createElement("button");
@@ -71,10 +85,11 @@ request.onload = function () {
                 var request2 = new XMLHttpRequest();
                 request2.open('DELETE', 'http://localhost:3000/api/paste/'+id , true);
                 request2.send();
-                console.log(id);
+                window.location.reload();
             };
             author.appendChild(authorname);
             div.appendChild(author);
+            div.appendChild(content);
             div.appendChild(mydelete);
             var section = document.getElementById('list-paste');
             section.appendChild(div);
