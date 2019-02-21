@@ -72,6 +72,6 @@ Vagrant.configure("2") do |config|
     cp -a /vagrant/{app.js,package.json,statics} /srv
     cd /srv
     sudo -u vagrant npm install
-    nohup sudo -u vagrant node app.js &
+    nohup sudo node app.js &
   SHELL
 end

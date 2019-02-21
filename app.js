@@ -10,7 +10,7 @@ const session = require('koa-session');
 const sqlite = require('sqlite');
 
 ADMIN_PORT = 4242;
-CLIENT_PORT = 3000;
+CLIENT_PORT = 80;
 
 ALLOWED_LANGUAGES = [
 					'PHP',
