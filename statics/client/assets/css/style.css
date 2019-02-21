@@ -13,6 +13,14 @@
   margin: auto;
 }
 
+.timestamp {
+  font-size: 10px;
+  font-style: italic;
+  color: grey;
+  text-align: right;
+  float: right;
+}
+
 .autocomplete {
   /*the container must be positioned relative:*/
   position: relative;
