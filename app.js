@@ -6,6 +6,7 @@ const koaBody = require('koa-body');
 const mount = require('koa-mount');
 const rewrite = require('koa-rewrite');
 const serve = require('koa-static');
+const session = require('koa-session');
 const sqlite = require('sqlite');
 
 ADMIN_PORT = 4242;
@@ -36,8 +37,7 @@ ALLOWED_LANGUAGES = [
 						max_views INTEGER,\
 						public INTEGER\
 						);');
-		} catch (err) {
-			console.error(err);
+		} catch {
 		}
 
 	}
@@ -108,7 +108,7 @@ ALLOWED_LANGUAGES = [
 		await next();
 	}
 
-	async function handlePatchPaste(ctx, next) {
+	async function handleUpdatePaste(ctx, next) {
 		try {
 			var values = setValues(ctx.request.body);
 		} catch(e) {
@@ -122,7 +122,6 @@ ALLOWED_LANGUAGES = [
 											title = (?), \
 											content = (?), \
 											language = (?), \
-											expiration_date = (?), \
 											max_views = (?), \
 											public = (?) \
 											WHERE id = (?)");
@@ -131,7 +130,6 @@ ALLOWED_LANGUAGES = [
 			values.title,
 			values.content,
 			values.language,
-			values.expiration_date,
 			values.max_views,
 			values.public,
 			values.id
@@ -179,7 +177,7 @@ ALLOWED_LANGUAGES = [
 	}
 
 	function setValues(body) {
-		values = {
+		var values = {
 			author: body['author'],
 			title: body['title'],
 			content: body['content'],
@@ -225,9 +223,15 @@ ALLOWED_LANGUAGES = [
 		return values;
 	}
 
-	async function handlePasteUpload(ctx, next) {
+	async function handlePostPaste(ctx, next) {
 		// We answer 404 when there is some missing parameters
 		// https://stackoverflow.com/a/3050624
+
+		if (ctx.session.isNew) {
+			ctx.status = 403;
+			await next();
+			return ;
+		}
 
 		try {
 			var values = setValues(ctx.request.body);
@@ -292,16 +296,19 @@ ALLOWED_LANGUAGES = [
 			'/paste/:id':    handleGetPaste,
 		},
 		POST: {
-			'/paste': handlePasteUpload,
+			'/paste': handlePostPaste,
 		}
 	}, true);
 	clientApi.use(clientApiRouterMiddleware);
 
 	const client = new Koa();
+	client.keys = ['oaz3boh1lezahGhu'];
+	client.use(session(client));
 	client.use(mount('/api', clientApi));
 	client.use(rewrite('/:id', '/paste.html'));
 	client.use(rewrite('/', '/index.html'));
 	client.use(serve('./statics/client'));
+
 	client.listen(CLIENT_PORT);
 
 	const adminApi = new Koa();
@@ -313,8 +320,8 @@ ALLOWED_LANGUAGES = [
 		GET: {
 			'/paste/all':    handleGetAll,
 		},
-		PATCH: {
-			'/paste/:id': handlePatchPaste,
+		POST: {
+			'/paste/update/:id': handleUpdatePaste,
 		},
 	}, true);
 	adminApi.use(adminApiRouterMiddleware);
