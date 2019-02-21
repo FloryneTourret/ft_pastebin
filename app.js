@@ -10,7 +10,15 @@ const sqlite = require('sqlite');
 ADMIN_PORT = 4242;
 CLIENT_PORT = 3000;
 
-ALLOWED_LANGUAGES = ['Bash', 'C', 'Javascript', 'Python'];
+ALLOWED_LANGUAGES = [
+					'PHP',
+					'Html',
+					'CSS',
+					'Javascript',
+					'C++',
+					'Python',
+					'Ruby',
+];
 
 (async () => {
 	async function setupDb() {
