@@ -1,3 +1,4 @@
+const cors = require('@koa/cors');
 const createRouter = require('koa-bestest-router');
 const Koa = require('koa');
 const koaBody = require('koa-body');
@@ -5,6 +6,9 @@ const mount = require('koa-mount');
 const rewrite = require('koa-rewrite');
 const serve = require('koa-static');
 const sqlite = require('sqlite');
+
+ADMIN_PORT = 4242;
+CLIENT_PORT = 3000;
 
 ALLOWED_LANGUAGES = ['Bash', 'C', 'Javascript', 'Python'];
 
@@ -70,6 +74,18 @@ ALLOWED_LANGUAGES = ['Bash', 'C', 'Javascript', 'Python'];
 	{
 		const query = await db.prepare("UPDATE pastes SET num_views = num_views + 1 WHERE id = (?)");
 		await query.run(id);
+	}
+
+	async function handleDeletePaste(ctx, next) {
+		const query = await db.prepare("UPDATE pastes SET content = '' WHERE id = (?) AND content != ''");
+		const data = await query.run(ctx.params.id);
+
+		if (data.stmt.changes == 1)
+			ctx.status = 200;
+		else
+			ctx.status = 204;
+
+		await next();
 	}
 
 	async function handleGetPaste(ctx, next) {
@@ -174,28 +190,48 @@ ALLOWED_LANGUAGES = ['Bash', 'C', 'Javascript', 'Python'];
 		await next();
 	}
 
+	function checkOriginAgainstWhitelist(ctx) {
+ 		const requestOrigin = ctx.headers.origin;
+ 		if (!whitelist.includes(requestOrigin)) {
+ 			return ctx.throw(403, `${requestOrigin} is not a valid origin`);
+ 		}
+		return requestOrigin;
+	}
+
 	const api = new Koa();
+
+	const whitelist = ['http://localhost:3000', 'http://localhost:4242'];
+	api.use(cors({origin: checkOriginAgainstWhitelist}));
+
 	api.use(koaBody());
+
 	const apiRouterMiddleware = createRouter({
+		DELETE: {
+			'/paste/:id': handleDeletePaste,
+		},
 		GET: {
 			'/paste/latest': handleGetLatest,
 			'/paste/:id': handleGetPaste,
 		},
 		POST: {
-			'/paste': handlePasteUpload
+			'/paste': handlePasteUpload,
 		}
 	}, true);
 	api.use(apiRouterMiddleware);
 
-	const app = new Koa();
+	const client = new Koa();
 
-	app.use(mount('/api', api));
+	client.use(mount('/api', api));
 
 
-	app.use(rewrite('/:id', '/paste.html'));
-	app.use(rewrite('/', '/index.html'));
+	client.use(rewrite('/:id', '/paste.html'));
+	client.use(rewrite('/', '/index.html'));
 
-	app.use(serve('./statics/client'));
+	client.use(serve('./statics/client'));
 
-	app.listen(3000);
+	client.listen(CLIENT_PORT);
+
+	const admin = new Koa();
+	admin.use(serve('./statics/admin'));
+	admin.listen(ADMIN_PORT);
 })();
