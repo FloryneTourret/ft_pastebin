@@ -120,7 +120,7 @@ ALLOWED_LANGUAGES = [
 		const query = await db.prepare("UPDATE pastes SET \
 											author = (?), \
 											title = (?), \
-											content = (?), \
+											content = (?) \
 											WHERE id = (?)");
 		const data = await query.run(
 			values.author,
