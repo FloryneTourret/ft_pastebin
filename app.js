@@ -121,17 +121,11 @@ ALLOWED_LANGUAGES = [
 											author = (?), \
 											title = (?), \
 											content = (?), \
-											language = (?), \
-											max_views = (?), \
-											public = (?) \
 											WHERE id = (?)");
 		const data = await query.run(
 			values.author,
 			values.title,
 			values.content,
-			values.language,
-			values.max_views,
-			values.public,
 			ctx.params.id
 		);
 
