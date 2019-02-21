@@ -37,7 +37,7 @@ ALLOWED_LANGUAGES = ['Bash', 'C', 'Javascript', 'Python'];
 	const db = await dbPromise;
 	await setupDb();
 
-	let timerId = setInterval(() => clearExpiredPastes(), 60);
+	let timerId = setInterval(() => clearExpiredPastes(), 60000);
 
 	async function deleteContentOf(id) {
 		const query = await db.prepare("UPDATE pastes SET content = '' WHERE id = (?)");
@@ -45,15 +45,18 @@ ALLOWED_LANGUAGES = ['Bash', 'C', 'Javascript', 'Python'];
 	}
 
 	async function clearExpiredPastes() {
-		const query = await db.prepare("SELECT id, expiration_date FROM pastes");
+		const query = await db.prepare("SELECT id, expiration_date FROM pastes WHERE content != ''");
 
 		var row;
 		while((row = await query.get()))
 		{
-			if (Date.now() > row.expiration_date)
-				deleteContentOf(row.id);
+			if (row.expiration_date != -1 && Date.now() > row.expiration_date)
+			{
+				console.error(`Deleting expired: ${row.id}`);
+				await deleteContentOf(row.id);
+			}
 		}
-		query.finalize();
+		await query.finalize();
 	}
 
 	function generateId() {
