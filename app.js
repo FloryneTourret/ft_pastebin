@@ -76,6 +76,14 @@ ALLOWED_LANGUAGES = ['Bash', 'C', 'Javascript', 'Python'];
 		await query.run(id);
 	}
 
+	async function handleGetAll(ctx, next) {
+		const query = await db.prepare("SELECT * FROM pastes");
+		const data = await query.all();
+		ctx.status = 200;
+		ctx.body = data;
+		await next();
+	}
+
 	async function handleDeletePaste(ctx, next) {
 		const query = await db.prepare("UPDATE pastes SET content = '' WHERE id = (?) AND content != ''");
 		const data = await query.run(ctx.params.id);
@@ -127,6 +135,7 @@ ALLOWED_LANGUAGES = ['Bash', 'C', 'Javascript', 'Python'];
 			title: body['title'],
 			content: body['content'],
 			language: body['language'],
+			expiration_date: body['expiration_date'],
 			max_views: body['max_views'],
 			public: body['public'],
 		};
@@ -151,6 +160,20 @@ ALLOWED_LANGUAGES = ['Bash', 'C', 'Javascript', 'Python'];
 			values.title = "Untitled";
 		if (values.language === undefined || ALLOWED_LANGUAGES.indexOf(values.language) == -1)
 			values.language = "None";
+		values.insertion_date = Date.now();
+		switch (values.expiration_date) {
+			case "1m":
+				values.expiration_date = values.insertion_date + 60*1000;
+				break ;
+			case "1h":
+				values.expiration_date = values.insertion_date + 60*60*1000;
+				break ;
+			case "1d":
+				values.expiration_date = values.insertion_date + 24*60*60*1000;
+				break ;
+			default:
+				values.expiration_date = -1;
+		}
 		if (values.max_views === undefined || isNaN(parseInt(values.max_views)) || parseInt(values.max_views) < 1)
 			values.max_views = -1;
 		if (values.public === undefined)
@@ -178,8 +201,8 @@ ALLOWED_LANGUAGES = ['Bash', 'C', 'Javascript', 'Python'];
 						values.title,
 						values.content,
 						values.language,
-						Date.now(),
-						Date.now() + 60*1000,
+						values.insertion_date,
+						values.expiration_date,
 						0,
 						values.max_views,
 						values.public
@@ -210,8 +233,9 @@ ALLOWED_LANGUAGES = ['Bash', 'C', 'Javascript', 'Python'];
 			'/paste/:id': handleDeletePaste,
 		},
 		GET: {
+			'/paste/all':    handleGetAll,
 			'/paste/latest': handleGetLatest,
-			'/paste/:id': handleGetPaste,
+			'/paste/:id':    handleGetPaste,
 		},
 		POST: {
 			'/paste': handlePasteUpload,
