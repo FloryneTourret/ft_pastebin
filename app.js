@@ -219,6 +219,7 @@ ALLOWED_LANGUAGES = ['Bash', 'C', 'Javascript', 'Python'];
 	function checkOriginAgainstWhitelist(ctx) {
  		const requestOrigin = ctx.headers.origin;
  		if (!whitelist.includes(requestOrigin)) {
+			console.error(`Bad origin: ${requestOrigin}`);
  			return ctx.throw(403, `${requestOrigin} is not a valid origin`);
  		}
 		return requestOrigin;
@@ -226,7 +227,7 @@ ALLOWED_LANGUAGES = ['Bash', 'C', 'Javascript', 'Python'];
 
 	const api = new Koa();
 
-	const whitelist = ['http://localhost:3000', 'http://localhost:4242'];
+	const whitelist = ['http://localhost:3000', 'http://localhost:4242', 'http://192.168.33.10:3000', 'http://192.168.33.10:4242'];
 	api.use(cors({origin: checkOriginAgainstWhitelist}));
 
 	api.use(koaBody());
