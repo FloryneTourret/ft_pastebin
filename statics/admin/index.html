@@ -51,14 +51,22 @@
 var request = new XMLHttpRequest();
 
 function delete_post(id){
-                new_id = id.replace(/id-/g, "");
-                var request2 = new XMLHttpRequest();
-                request2.open('DELETE', 'http://'+window.location.hostname+'/api/paste/'+new_id, true);
-                request2.send();
-                window.location.reload();
-            };
+    new_id = id.replace(/id-/g, "");
+    var request2 = new XMLHttpRequest();
+    request2.open('DELETE', 'http://'+window.location.hostname+':4242/api/paste/'+new_id, true);
+    request2.send();
+    window.location.reload();
+};
 
-request.open('GET', 'http://'+window.location.hostname+'/api/paste/all', true);
+function update_post(id){
+    new_id = id.replace(/id-/g, "");
+    var request2 = new XMLHttpRequest();
+    request2.open('PATCH', 'http://'+window.location.hostname+':4242/api/paste/'+new_id, true);
+    request2.send();
+    window.location.reload();
+};
+
+request.open('GET', 'http://'+window.location.hostname+':4242/api/paste/all', true);
 request.onload = function () {
             // Begin accessing JSON data here
     var data = JSON.parse(this.response);
@@ -75,33 +83,53 @@ request.onload = function () {
             {
                 div.classList.add("deleted-paste");
             }
-            var content = document.createElement("p");
+            var content = document.createElement("input");
             if (data[i].content)
             {
+                content.value = data[i].content;
                 var contenttext = document.createTextNode(data[i].content);
             }
             else
             {
+                content.value = "Le paste a expiré ou a été supprimé";
                 var contenttext = document.createTextNode("Le paste a expiré ou a été supprimé");
             }
             content.appendChild(contenttext);
-            var author = document.createElement("h2");
+            var labelauthor = document.createElement("label");
+            labelauthor.innerHTML = "Author name : <br>";
+            var labeltitle= document.createElement("label");
+            labeltitle.innerHTML = "Title name : <br>";
+            var labelcontent = document.createElement("label");
+            labelcontent.innerHTML = "Paste content: <br>";
+            var author = document.createElement("input");
+            author.setAttribute("name", "author");
+            author.value = data[i].author;
             var authorname = document.createTextNode(data[i].author);
-            var name = document.createElement("h3");
+            var name = document.createElement("input");
+            name.setAttribute("name", "title");
+            name.value = data[i].title;
             var nametext = document.createTextNode(data[i].title)
             var mydelete = document.createElement("button");
+            var myupdate = document.createElement("button");
+            myupdate.innerHTML = "Update paste";
             mydelete.innerHTML = "Delete paste";
             var id = data[i].id;
+            myupdate.setAttribute('id', data[i].id);
             mydelete.setAttribute('id', data[i].id);
+            myupdate.setAttribute('onclick', 'update_post("id-'+data[i].id+'");');
             mydelete.setAttribute('onclick', 'delete_post("id-'+data[i].id+'");');
             name.appendChild(nametext);
             author.appendChild(authorname);
+            div.appendChild(labeltitle);
             div.appendChild(name);
+            div.appendChild(labelauthor);
             div.appendChild(author);
+            div.appendChild(labelcontent);
             div.appendChild(content);
             if (data[i].content)
             {
                 div.appendChild(mydelete);
+                div.appendChild(myupdate);
             }
             var section = document.getElementById('list-paste');
             section.appendChild(div);
