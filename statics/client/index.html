@@ -128,6 +128,41 @@
 
     <script>
 
+        function timeDifference(current, previous) {
+
+            var msPerMinute = 60 * 1000;
+            var msPerHour = msPerMinute * 60;
+            var msPerDay = msPerHour * 24;
+            var msPerMonth = msPerDay * 30;
+            var msPerYear = msPerDay * 365;
+
+            var elapsed = current - previous;
+
+            if (elapsed < msPerMinute) {
+                return Math.round(elapsed / 1000) + ' seconds ago';
+            }
+
+            else if (elapsed < msPerHour) {
+                return Math.round(elapsed / msPerMinute) + ' minutes ago';
+            }
+
+            else if (elapsed < msPerDay) {
+                return Math.round(elapsed / msPerHour) + ' hours ago';
+            }
+
+            else if (elapsed < msPerMonth) {
+                return 'approximately ' + Math.round(elapsed / msPerDay) + ' days ago';
+            }
+
+            else if (elapsed < msPerYear) {
+                return 'approximately ' + Math.round(elapsed / msPerMonth) + ' months ago';
+            }
+
+            else {
+                return 'approximately ' + Math.round(elapsed / msPerYear) + ' years ago';
+            }
+        }
+
         var editor = ace.edit("editor");
         editor.setTheme("ace/theme/monokai");
         editor.session.setMode("ace/mode/text");
@@ -144,7 +179,7 @@
 
         var request = new XMLHttpRequest();
 
-        request.open('GET', 'http://'+window.location.host+'/api/paste/latest', true);
+        request.open('GET', 'http://' + window.location.host + '/api/paste/latest', true);
         request.onload = function () {
 
             // Begin accessing JSON data here
@@ -166,9 +201,16 @@
                     cardBody.setAttribute('class', 'card-body');
                     div.appendChild(cardBody);
 
+                    date = new Date(data[i].insertion_date);
+                    now = new Date(Date.now());
+                    var time = document.createElement('p');
+                    time.setAttribute('class', 'timestamp');
+                    time.innerHTML = timeDifference(now, date);
+                    cardBody.appendChild(time);
+                    
                     var title = document.createElement('a');
                     title.setAttribute('class', 'card-title');
-                    title.setAttribute('href', 'http://' + window.location.host + '/' + data[i].id +'/');
+                    title.setAttribute('href', 'http://' + window.location.host + '/' + data[i].id + '/');
                     title.innerHTML = data[i].title;
                     cardBody.appendChild(title);
 
@@ -177,7 +219,6 @@
                     p.innerHTML = data[i].author;
                     cardBody.appendChild(p);
                 }
-
             }
         }
 

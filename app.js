@@ -1,3 +1,4 @@
+const auth = require('koa-basic-auth');
 const cors = require('@koa/cors');
 const createRouter = require('koa-bestest-router');
 const Koa = require('koa');
@@ -10,7 +11,15 @@ const sqlite = require('sqlite');
 ADMIN_PORT = 4242;
 CLIENT_PORT = 3000;
 
-ALLOWED_LANGUAGES = ['Bash', 'C', 'Javascript', 'Python'];
+ALLOWED_LANGUAGES = [
+					'PHP',
+					'Html',
+					'CSS',
+					'Javascript',
+					'C++',
+					'Python',
+					'Ruby',
+];
 
 (async () => {
 	async function setupDb() {
@@ -219,24 +228,22 @@ ALLOWED_LANGUAGES = ['Bash', 'C', 'Javascript', 'Python'];
 	function checkOriginAgainstWhitelist(ctx) {
  		const requestOrigin = ctx.headers.origin;
  		if (!whitelist.includes(requestOrigin)) {
+			console.error(`Bad origin: ${requestOrigin}`);
  			return ctx.throw(403, `${requestOrigin} is not a valid origin`);
  		}
 		return requestOrigin;
 	}
 
-	const api = new Koa();
+	const whitelist = ['http://localhost:3000', 'http://localhost:4242', 'http://192.168.33.10:3000', 'http://192.168.33.10:4242'];
 
-	const whitelist = ['http://localhost:3000', 'http://localhost:4242'];
-	api.use(cors({origin: checkOriginAgainstWhitelist}));
-
-	api.use(koaBody());
-
-	const apiRouterMiddleware = createRouter({
-		DELETE: {
-			'/paste/:id': handleDeletePaste,
-		},
+	const clientApi = new Koa();
+	clientApi.use(cors({origin: checkOriginAgainstWhitelist}));
+	clientApi.use(koaBody());
+	// TODO
+	// Ces deux routes devront renvoyer le bon code d’erreur HTTP si une méthode
+	// non autorisée est utilisée pour accéder à l’une des routes.
+	const clientApiRouterMiddleware = createRouter({
 		GET: {
-			'/paste/all':    handleGetAll,
 			'/paste/latest': handleGetLatest,
 			'/paste/:id':    handleGetPaste,
 		},
@@ -244,21 +251,30 @@ ALLOWED_LANGUAGES = ['Bash', 'C', 'Javascript', 'Python'];
 			'/paste': handlePasteUpload,
 		}
 	}, true);
-	api.use(apiRouterMiddleware);
+	clientApi.use(clientApiRouterMiddleware);
 
 	const client = new Koa();
-
-	client.use(mount('/api', api));
-
-
+	client.use(mount('/api', clientApi));
 	client.use(rewrite('/:id', '/paste.html'));
 	client.use(rewrite('/', '/index.html'));
-
 	client.use(serve('./statics/client'));
-
 	client.listen(CLIENT_PORT);
 
+	const adminApi = new Koa();
+	adminApi.use(koaBody());
+	const adminApiRouterMiddleware = createRouter({
+		DELETE: {
+			'/paste/:id': handleDeletePaste,
+		},
+		GET: {
+			'/paste/all':    handleGetAll,
+		},
+	}, true);
+	adminApi.use(adminApiRouterMiddleware);
+
 	const admin = new Koa();
+	admin.use(auth({ name: 'admin', pass: 'admin' }));
 	admin.use(serve('./statics/admin'));
+	admin.use(mount('/api', adminApi));
 	admin.listen(ADMIN_PORT);
 })();
