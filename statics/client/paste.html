@@ -51,7 +51,7 @@
             <img id="download" src="/assets/img/download.png" alt="download-icon" onclick="mydownload();">
         </div>
         <div class="float-right">
-            <img id="clipboard" src="/assets/img/clipboard.png" alt="download-icon" onclick="copytoclipboard();">
+            <img id="clipboard" src="/assets/img/clipboard.png" alt="download-icon" onclick="myFunction()">
         </div>
         
      </div>
@@ -64,8 +64,10 @@
             <p id="language"></p>
         </div>
         <div class="paste-zone col-md-6">
+            <input type="text" value="" id="paste">
             <p id="paste-content"></p>
-            <div id="editor"></div>
+            <div id="editor">
+            </div>
             <div id="brut">
                 <pre id="pre"></pre>
             </div>
@@ -97,6 +99,9 @@
 
             if (request.status >= 200 && request.status < 400) {
                 var date = new Date(data.insertion_date);
+                if(data.expiration_date)
+                    var exp = new Date(data.expiration_date);
+                    
                 title = data.title;
                 document.getElementById('title').textContent= data.title;
                 document.getElementById('author').textContent= data.author;
@@ -105,10 +110,12 @@
                 else
                     data.language = "Plaintext"
                 document.getElementById('language').textContent = data.language;
+                document.getElementById('paste').value = data.content;
                 document.getElementById('paste-content').textContent = data.content;
                 document.getElementById('pre').textContent = data.content;
                 document.getElementById('insertion').innerHTML = "Posté le :<br>"+date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()+" à "+date.getHours()+"h"+date.getMinutes();
-                document.getElementById('expiration').innerHTML = "Visible jusqu'au :<br>"+date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()+" à "+date.getHours()+"h"+date.getMinutes();
+                if(data.expiration_date)
+                    document.getElementById('expiration').innerHTML = "Visible jusqu'au :<br>"+exp.getDate()+"/"+(exp.getMonth()+1)+"/"+exp.getFullYear()+" à "+exp.getHours()+"h"+exp.getMinutes();
                 editor.insert(data.content);
             }
         }
@@ -145,15 +152,11 @@
         download(text, title+".txt", "text/plain");
     }
 
-    function copytoclipboard()
-    {
-        var text = document.querySelector('#paste-content');
-        var range = document.createRange();
-        range.selectNode(text);
-        window.getSelection().addRange(range);
-        document.execCommand('copy');
-        window.getSelection().removeAllRanges();
-    }
+    function myFunction() {
+        var copyText = document.getElementById("paste");
+        copyText.select();
+        document.execCommand("copy");
+      }
 
 </script>
 </body>

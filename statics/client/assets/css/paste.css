@@ -95,8 +95,16 @@ nav{
     padding-top: 1vh;
 }
 
+#paste{
+    position: absolute;
+    top: -1000px;
+    left: -1000px;
+}
+
 #paste-content{
-    display: none;
+    position: absolute;
+    top: -1000px;
+    left: -1000px;
 }
 
 #brut {
