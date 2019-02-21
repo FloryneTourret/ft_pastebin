@@ -76,6 +76,14 @@ ALLOWED_LANGUAGES = ['Bash', 'C', 'Javascript', 'Python'];
 		await query.run(id);
 	}
 
+	async function handleGetAll(ctx, next) {
+		const query = await db.prepare("SELECT * FROM pastes");
+		const data = await query.all();
+		ctx.status = 200;
+		ctx.body = data;
+		await next();
+	}
+
 	async function handleDeletePaste(ctx, next) {
 		const query = await db.prepare("UPDATE pastes SET content = '' WHERE id = (?) AND content != ''");
 		const data = await query.run(ctx.params.id);
@@ -225,8 +233,9 @@ ALLOWED_LANGUAGES = ['Bash', 'C', 'Javascript', 'Python'];
 			'/paste/:id': handleDeletePaste,
 		},
 		GET: {
+			'/paste/all':    handleGetAll,
 			'/paste/latest': handleGetLatest,
-			'/paste/:id': handleGetPaste,
+			'/paste/:id':    handleGetPaste,
 		},
 		POST: {
 			'/paste': handlePasteUpload,
