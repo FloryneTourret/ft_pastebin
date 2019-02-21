@@ -211,7 +211,7 @@ ALLOWED_LANGUAGES = [
 		}
 		if (values.max_views === undefined || isNaN(parseInt(values.max_views)) || parseInt(values.max_views) < 1)
 			values.max_views = -1;
-		if (values.public === undefined)
+		if (values.public === undefined || values.public != 0)
 			values.public = 1;
 		else
 			values.public = 0;
