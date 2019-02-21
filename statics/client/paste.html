@@ -84,7 +84,7 @@
     var title = "paste";
     var language = "text";
 
-    request.open('GET', 'http://localhost:3000/api/paste'+window.location.pathname, true);
+    request.open('GET', 'http://'+window.location.host+'/api/paste'+window.location.pathname, true);
     request.onload = function () {
 
         if(this.response != "Can't see anymore!")
@@ -107,6 +107,7 @@
                 document.getElementById('insertion').innerHTML = "Posté le :<br>"+date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()+" à "+date.getHours()+"h"+date.getMinutes();
                 document.getElementById('expiration').innerHTML = "Visible jusqu'au :<br>"+date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()+" à "+date.getHours()+"h"+date.getMinutes();
                 editor.insert(data.content);
+                console.log(window.location.host)
             }
         }
         else{
