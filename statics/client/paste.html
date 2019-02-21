@@ -73,7 +73,7 @@
         else if(this.response != "Can't see anymore!")
         {
             if (request.status >= 200 && request.status < 400) {
-                // Begin accessing JSON data here
+                
                 var data = JSON.parse(this.response);
 
                 var editor = ace.edit("editor");
