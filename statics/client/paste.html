@@ -98,13 +98,10 @@
                 document.getElementById('pre').textContent= data.content;
                 document.getElementById('insertion').textContent= date.toDateString();
                 editor.insert(data.content);
-
-            } else {
-                console.log('error');
             }
         }
         else{
-            document.getElementById('content').innerHTML = "<h1 class='text-center expire'>Désolé, le paste est expiré !</h1>";
+            document.getElementById('content').innerHTML = "<h1 class='text-center expire'>Désolé, le paste n'est plus visible !</h1>";
             document.getElementById('dl').innerHTML = "";
         }
         
