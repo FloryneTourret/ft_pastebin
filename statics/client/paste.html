@@ -50,8 +50,9 @@
    
 <!--JavaScript at end of body for optimized loading-->
 <!-- Latest compiled and minified JavaScript -->
-<!-- (Optional) Latest compiled and minified JavaScript translation files -->
 <script src="https:/code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+<script src="https:/code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+<!-- (Optional) Latest compiled and minified JavaScript translation files -->
 <script src="https:/cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.6/umd/popper.min.js" integrity="sha384-wHAiFfRlMFy6i5SRaxvfOCifBUQy1xHdJ/yoi7FRNXMRBu5WHdZYu1hA6ZOblgut" crossorigin="anonymous"></script>
 <script src="https:/stackpath.bootstrapcdn.com/bootstrap/4.2.1/js/bootstrap.min.js" integrity="sha384-B0UglyR+jN6CkvvICOB2joaf5I4l3gm9GU6Hc1og6Ls7i6U/mkkaduKaBhlAXv9k" crossorigin="anonymous"></script>
 <script src="https:/cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.13.2/js/bootstrap-select.min.js"></script>
@@ -64,28 +65,30 @@
 
     request.open('GET', 'http://'+window.location.host+'/api/paste'+window.location.pathname, true);
     request.onload = function () {
-
-        if(this.response != "Can't see anymore!")
+        if(request.status == 404) 
         {
-            // Begin accessing JSON data here
-            var data = JSON.parse(this.response);
-
+            document.getElementById('content').innerHTML = "<h1 class='text-center expire'>Désolé, cette page n'existe pas !</h1>";
+            document.getElementById('dl').innerHTML = "";
+        }
+        else if(this.response != "Can't see anymore!")
+        {
             if (request.status >= 200 && request.status < 400) {
+                // Begin accessing JSON data here
+                var data = JSON.parse(this.response);
 
                 var editor = ace.edit("editor");
                 editor.setTheme("ace/theme/monokai");
+                if(data.language == "None")
+                    data.language = "text"
+                language = data.language
                 editor.session.setMode("ace/mode/"+data.language.toLowerCase());
                 editor.setReadOnly(true);
-
                 var date = new Date(data.insertion_date);
                 if(data.expiration_date)
                     var exp = new Date(data.expiration_date);
                 title = data.title;
                 document.getElementById('title').textContent= data.title;
                 document.getElementById('author').textContent= data.author;
-                if(data.language == "None")
-                    data.language = "text"
-                language = data.language
                 document.getElementById('language').textContent = data.language;
                 document.getElementById('paste').value = data.content;
                 document.getElementById('paste-content').textContent = data.content;
@@ -103,7 +106,6 @@
         }
         
     }
-
     request.send();
 
     function mydownload()
