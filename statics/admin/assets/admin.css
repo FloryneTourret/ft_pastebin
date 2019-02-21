@@ -14,18 +14,20 @@ body {
     min-height: 10vh;
     background-color: whitesmoke;
     opacity: 0.95;
-    widows: 100%;
     margin-top: 5vh;
     padding: 50px;
     border-radius: 10px;
+    margin-left: 10px;
+    margin-right: 10px;
 }
 
 .deleted-paste {
     min-height: 10vh;
     background-color: tomato;
     opacity: 0.95;
-    widows: 100%;
     margin-top: 5vh;
     padding: 50px;
     border-radius: 10px;
+    margin-left: 10px;
+    margin-right: 10px;
 }

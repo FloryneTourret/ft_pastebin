@@ -1,3 +1,4 @@
+const auth = require('koa-basic-auth');
 const cors = require('@koa/cors');
 const createRouter = require('koa-bestest-router');
 const Koa = require('koa');
@@ -107,6 +108,43 @@ ALLOWED_LANGUAGES = [
 		await next();
 	}
 
+	async function handlePatchPaste(ctx, next) {
+		try {
+			var values = setValues(ctx.request.body);
+		} catch(e) {
+			ctx.status = 400;
+			await next();
+			return ;
+		}
+
+		const query = await db.prepare("UPDATE pastes SET \
+											author = (?), \
+											title = (?), \
+											content = (?), \
+											language = (?), \
+											expiration_date = (?), \
+											max_views = (?), \
+											public = (?) \
+											WHERE id = (?)");
+		const data = await query.run(
+			values.author,
+			values.title,
+			values.content,
+			values.language,
+			values.expiration_date,
+			values.max_views,
+			values.public,
+			values.id
+		);
+
+		if (data.stmt.changes == 1)
+			ctx.status = 200;
+		else
+			ctx.status = 204;
+
+		await next();
+	}
+
 	async function handleGetPaste(ctx, next) {
 		const query = await db.prepare("SELECT * FROM pastes WHERE id = (?)");
 		const data = await query.all(ctx.params.id);
@@ -140,8 +178,8 @@ ALLOWED_LANGUAGES = [
 		await next();
 	}
 
-	function getValues(body) {
-		return {
+	function setValues(body) {
+		values = {
 			author: body['author'],
 			title: body['title'],
 			content: body['content'],
@@ -150,18 +188,10 @@ ALLOWED_LANGUAGES = [
 			max_views: body['max_views'],
 			public: body['public'],
 		};
-	}
-
-	async function handlePasteUpload(ctx, next) {
-		// We answer 404 when there is some missing parameters
-		// https://stackoverflow.com/a/3050624
-
-		var values = getValues(ctx.request.body);
 
 		if (values.content === undefined || values.content.length < 1)
 		{
-			ctx.status = 404;
-			await next();
+			throw new Error('Whoops!');
 			return ;
 		}
 
@@ -191,6 +221,21 @@ ALLOWED_LANGUAGES = [
 			values.public = 1;
 		else
 			values.public = 0;
+
+		return values;
+	}
+
+	async function handlePasteUpload(ctx, next) {
+		// We answer 404 when there is some missing parameters
+		// https://stackoverflow.com/a/3050624
+
+		try {
+			var values = setValues(ctx.request.body);
+		} catch(e) {
+			ctx.status = 404;
+			await next();
+			return ;
+		}
 
 		values.id = await generateUniqueId();
 
@@ -233,19 +278,16 @@ ALLOWED_LANGUAGES = [
 		return requestOrigin;
 	}
 
-	const api = new Koa();
-
 	const whitelist = ['http://localhost:3000', 'http://localhost:4242', 'http://192.168.33.10:3000', 'http://192.168.33.10:4242'];
-	api.use(cors({origin: checkOriginAgainstWhitelist}));
 
-	api.use(koaBody());
-
-	const apiRouterMiddleware = createRouter({
-		DELETE: {
-			'/paste/:id': handleDeletePaste,
-		},
+	const clientApi = new Koa();
+	clientApi.use(cors({origin: checkOriginAgainstWhitelist}));
+	clientApi.use(koaBody());
+	// TODO
+	// Ces deux routes devront renvoyer le bon code d’erreur HTTP si une méthode
+	// non autorisée est utilisée pour accéder à l’une des routes.
+	const clientApiRouterMiddleware = createRouter({
 		GET: {
-			'/paste/all':    handleGetAll,
 			'/paste/latest': handleGetLatest,
 			'/paste/:id':    handleGetPaste,
 		},
@@ -253,21 +295,33 @@ ALLOWED_LANGUAGES = [
 			'/paste': handlePasteUpload,
 		}
 	}, true);
-	api.use(apiRouterMiddleware);
+	clientApi.use(clientApiRouterMiddleware);
 
 	const client = new Koa();
-
-	client.use(mount('/api', api));
-
-
+	client.use(mount('/api', clientApi));
 	client.use(rewrite('/:id', '/paste.html'));
 	client.use(rewrite('/', '/index.html'));
-
 	client.use(serve('./statics/client'));
-
 	client.listen(CLIENT_PORT);
 
+	const adminApi = new Koa();
+	adminApi.use(koaBody());
+	const adminApiRouterMiddleware = createRouter({
+		DELETE: {
+			'/paste/:id': handleDeletePaste,
+		},
+		GET: {
+			'/paste/all':    handleGetAll,
+		},
+		PATCH: {
+			'/paste/:id': handlePatchPaste,
+		},
+	}, true);
+	adminApi.use(adminApiRouterMiddleware);
+
 	const admin = new Koa();
+	admin.use(auth({ name: 'admin', pass: 'admin' }));
 	admin.use(serve('./statics/admin'));
+	admin.use(mount('/api', adminApi));
 	admin.listen(ADMIN_PORT);
 })();
