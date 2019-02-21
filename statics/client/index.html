@@ -175,7 +175,7 @@
 
         var request = new XMLHttpRequest();
 
-        request.open('GET', 'http://'+window.location.host+'api/paste/latest', true);
+        request.open('GET', 'http://'+window.location.host+'/api/paste/latest', true);
         request.onload = function () {
 
             // Begin accessing JSON data here
@@ -200,7 +200,7 @@
 
                     var title = document.createElement('a');
                     title.setAttribute('class', 'card-title');
-                    title.setAttribute('href', 'http://localhost:3000/'+data[i].id+'/');
+                    title.setAttribute('href', 'http://' + window.location.host + '/' + data[i].id +'/');
                     title.innerHTML = data[i].title;
                     cardBody.appendChild(title);
 
