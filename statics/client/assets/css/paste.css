@@ -116,12 +116,13 @@ nav{
         height: 500px;
         background-color: rgba(44, 255, 220, 0.397);
         opacity: 0.95;
-        margin-left: 6vw;
+        margin-left: 5vw;
         width: 90vw;
     }
     .paste-zone
     {
-        margin-left: 3vw;
+        margin-left: 5vw;
+        width: 90vw;
     }
     #author{
         padding-top: 10vh;
